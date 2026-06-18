@@ -2,9 +2,9 @@
 """field parser functions"""
 # Helper functions
 
-def parse_int_value(value):
+def parse_int_value(value, default=None):
     value = value.strip()
-    return int(value) if value else None
+    return int(value) if value else default
 
 
 def parse_kv_entries(merged_text):
@@ -455,7 +455,7 @@ def parse_cryst1(line):
     beta = float(line[40:47].strip())
     gamma = float(line[47:54].strip())
     s_group = line[55:66].strip()
-    z = parse_int_value(line[66:70].strip())
+    z = parse_int_value(line[66:70].strip(), 1)
     return [a, b, c, alpha, beta, gamma, s_group, z]
 
 
