@@ -455,7 +455,7 @@ def parse_cryst1(line):
     beta = float(line[40:47].strip())
     gamma = float(line[47:54].strip())
     s_group = line[55:66].strip()
-    z = int(line[66:70].strip())
+    z = parse_int_value(line[66:70].strip())
     return [a, b, c, alpha, beta, gamma, s_group, z]
 
 
