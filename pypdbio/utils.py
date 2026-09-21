@@ -1,3 +1,25 @@
+import os
+from contextlib import contextmanager
+
+
+@contextmanager
+def open_pdb(source, mode):
+    """Yield a text stream for a path or an already-open file.
+
+    A path is opened and closed here. A file object is yielded as-is and
+    left open for its owner to close.
+    """
+    if isinstance(source, (str, os.PathLike)):
+        with open(source, mode, encoding="utf-8") as stream:
+            yield stream
+    elif hasattr(source, "read" if "r" in mode else "write"):
+        yield source
+    else:
+        raise TypeError(
+            f"expected a path or a text file object, got {type(source).__name__}"
+        )
+
+
 def next_chain_id(current_chain_id, occupied_chain_ids):
     if current_chain_id == "":
         return "A"

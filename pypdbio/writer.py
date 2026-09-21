@@ -10,7 +10,7 @@ from .models import (
     Model,
     Chain,
 )
-from .utils import chain_id_of_index
+from .utils import chain_id_of_index, open_pdb
 from .unit import unit_config
 
 class PdbWriter:
@@ -18,10 +18,11 @@ class PdbWriter:
     PDB writer class.
     """
 
-    def __init__(self, path):
-        """ Initializes the PdbWriter with the given file path.
-        :param path: Path to the PDB file to be written"""
-        self.pdb_path = path
+    def __init__(self, file):
+        """ Initializes the PdbWriter with a path or an open text file.
+        :param file: Path to the PDB file, or a text file object. A path is
+            opened and closed by write(). A file object is left open."""
+        self.pdb_file = file
         self.__validation_info = {
             "num_remark": 0,
             "num_het": 0,
@@ -586,7 +587,7 @@ class PdbWriter:
 
     @write.register(PdbData)
     def _(self, data):
-        with open(self.pdb_path, "w", encoding="utf-8") as f:
+        with open_pdb(self.pdb_file, "w") as f:
             self.__write_header_section(data, f)
             self.__write_primary_structure_section(data, f)
             self.__write_heterogen_section(data, f)

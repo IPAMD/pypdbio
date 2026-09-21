@@ -126,11 +126,11 @@ def fetch(pdb_id: str, path: str | None = None) -> None
 ### 构造
 
 ```python
-PdbReader(path: str)
+PdbReader(file)
 ```
 
-- `path`：PDB 文件路径。
-- 文件以 `utf-8` 打开；若文件含非 UTF-8 字节，可能需在系统侧转换编码。
+- `file`：PDB 文件路径（`str` 或 `pathlib.Path`），或已打开的文本文件对象。路径由 `read()` 打开并关闭；文件对象读完后保持打开，由调用方关闭。
+- 路径以 `utf-8` 打开；若文件含非 UTF-8 字节，可能需在系统侧转换编码。传入的文件对象需已是文本模式。
 
 ### `read() -> PdbData`
 
@@ -156,11 +156,11 @@ pdb_data = reader.read()
 ### 构造
 
 ```python
-PdbWriter(path: str)
+PdbWriter(file)
 ```
 
-- `path`：输出 PDB 路径。
-- 写出时使用 `utf-8` 编码。
+- `file`：输出路径（`str` 或 `pathlib.Path`），或已打开的文本文件对象。路径由 `write()` 打开并关闭；文件对象写完后保持打开，由调用方关闭。
+- 写出到路径时使用 `utf-8` 编码。传入的文件对象需已是文本模式。
 
 ### `write(data)`
 

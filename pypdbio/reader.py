@@ -5,7 +5,7 @@
 import warnings
 from .models import *
 from .reader_helper import *
-from .utils import next_chain_id
+from .utils import next_chain_id, open_pdb
 from .unit import unit_config
 
 
@@ -14,10 +14,11 @@ class PdbReader:
     PDB reader class.
     """
 
-    def __init__(self, path):
-        """ Initializes the PdbReader with the given file path.
-        :param path: Path to the PDB file to be read"""
-        self.pdb_path = path
+    def __init__(self, file):
+        """ Initializes the PdbReader with a path or an open text file.
+        :param file: Path to the PDB file, or a text file object. A path is
+            opened and closed by read(). A file object is left open."""
+        self.pdb_file = file
         self.__validation_info = {
             "num_remark": 0,
             "num_het": 0,
@@ -587,19 +588,22 @@ class PdbReader:
     def read(self):
         """ Reads the PDB file and parses it into a PdbData structure."""
         pdb_data = PdbData()
-        with open(self.pdb_path, 'r', encoding='utf-8') as f:
+        with open_pdb(self.pdb_file, "r") as f:
             for line in f:
                 line = line.rstrip('\n')
-                self.__parse_title_section(line, pdb_data)
-                self.__parse_primary_structure_section(line, pdb_data)
-                self.__parse_heterogen_section(line, pdb_data)
-                self.__parse_secondary_structure_section(line, pdb_data)
-                self.__parse_misc_feature_section(line, pdb_data)
-                self.__parse_crystallographic_section(line, pdb_data)
-                self.__parse_coordinate_section(line, pdb_data)
-                self.__parse_connectivity_section(line, pdb_data)
-                self.__parse_bookkeeping_section(line, pdb_data)
-
+                try:
+                    self.__parse_title_section(line, pdb_data)
+                    self.__parse_primary_structure_section(line, pdb_data)
+                    self.__parse_heterogen_section(line, pdb_data)
+                    self.__parse_secondary_structure_section(line, pdb_data)
+                    self.__parse_misc_feature_section(line, pdb_data)
+                    self.__parse_crystallographic_section(line, pdb_data)
+                    self.__parse_coordinate_section(line, pdb_data)
+                    self.__parse_connectivity_section(line, pdb_data)
+                    self.__parse_bookkeeping_section(line, pdb_data)
+                except Exception as e:
+                    warnings.warn(f"Error parsing line {line}: {e}")
+                    continue
         self.__post_process(pdb_data)
         self.__check_status(pdb_data)
         return pdb_data
